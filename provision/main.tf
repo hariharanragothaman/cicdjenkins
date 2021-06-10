@@ -3,6 +3,40 @@ provider "aws" {
   region  = "us-east-1"
 }
 
+# Configuring security groups
+
+variable "ingressrules" {
+  type    = list(number)
+  default = [80, 443, 22]
+}
+
+resource "aws_security_group" "web_traffic" {
+  name        = "Allow web traffic"
+  description = "Allow ssh and standard http/https ports inbound and everything outbound"
+
+  dynamic "ingress" {
+    iterator = port
+    for_each = var.ingressrules
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "TCP"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    "Terraform" = "true"
+  }
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -22,8 +56,14 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "jenkins" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
+  security_groups = [aws_security_group.web_traffic.name]
+  # Create a key-pair ni the Amazon EC2 Console: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair
+  key_name        = "gocicd"  
   
-  tags = {
+  # Execute Remote commands inside the grabbed instance using "remote-exec" provisioner
+  
+
+ tags = {
     "Name"      = "Jenkins_Server"
     "Terraform" = "true"
   }
