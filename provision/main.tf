@@ -73,6 +73,9 @@ resource "aws_instance" "jenkins" {
 
       # Add Logic here to configure jenkins and its plugins
       # Take the configuration as code path
+      AUTHSTRING = "-auth admin:$(cat /mnt/jenkins/jenkins/secrets/initialAdminPassword)"
+      echo ""AUTH STRING: $AUTH_STRING" > /mnt/jenkins/jenkins/auth_string"
+      
 
       "sudo systemctl start jenkins",
       "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
