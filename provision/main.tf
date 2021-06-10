@@ -65,9 +65,15 @@ resource "aws_instance" "jenkins" {
     inline = [
       "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -",
       "sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
-      "sudo apt update -qq",
-      "sudo apt install -y default-jre",
-      "sudo apt install -y jenkins",
+      "sudo apt-get update",
+      "sudo add-apt-repository universe",
+      "sudo apt-get update",
+      "sudo apt install --assume-yes openjdk-11-jdk",
+      "sudo apt-get --assume-yes install jenkins",
+
+      # Add Logic here to configure jenkins and its plugins
+      # Take the configuration as code path
+
       "sudo systemctl start jenkins",
       "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
       "sudo sh -c \"iptables-save > /etc/iptables.rules\"",
