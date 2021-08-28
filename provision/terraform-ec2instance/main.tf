@@ -72,8 +72,9 @@ resource "aws_instance" "jenkins" {
       "sudo apt-get --assume-yes install jenkins",
 
       # Add Logic here to configure jenkins with LDAP, webhooks etc
-      "sudo java -Djenkins.install.runSetupWizard=false -jar -Dhudson.Main.development=true ./usr/share/jenkins/jenkins.war",
-      "sudo systemctl restart jenkins",
+      # "sudo java -Djenkins.install.runSetupWizard=false -jar -Dhudson.Main.development=true ./usr/share/jenkins/jenkins.war",
+      "ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false",
+      "sudo systemctl start jenkins",
 
       # Add LOGIC to configure plugins - using jenkins plugin manager
 
