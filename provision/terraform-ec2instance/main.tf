@@ -71,13 +71,13 @@ resource "aws_instance" "jenkins" {
       "sudo apt install --assume-yes openjdk-11-jdk",
       "sudo apt-get --assume-yes install jenkins",
 
-      # Add Logic here to configure jenkins and its plugins
-      # Take the configuration as code path
-      "AUTHSTRING = -auth admin:$(cat /mnt/jenkins/jenkins/secrets/initialAdminPassword)",
-      "echo AUTH STRING: $AUTH_STRING > /mnt/jenkins/jenkins/auth_string",
-      
+      # Add Logic here to configure jenkins with LDAP, webhooks etc
+      "sudo java -Djenkins.install.runSetupWizard=false -jar -Dhudson.Main.development=true ./usr/share/jenkins/jenkins.war",
+      "sudo systemctl restart jenkins",
 
-      "sudo systemctl start jenkins",
+      # Add LOGIC to configure plugins - using jenkins plugin manager
+
+      # Add LOGIC for IPTABLES
       "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
       "sudo sh -c \"iptables-save > /etc/iptables.rules\"",
       "echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections",
