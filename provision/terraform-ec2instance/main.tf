@@ -73,8 +73,8 @@ resource "aws_instance" "jenkins" {
 
       # Add Logic here to configure jenkins and its plugins
       # Take the configuration as code path
-      AUTHSTRING = "-auth admin:$(cat /mnt/jenkins/jenkins/secrets/initialAdminPassword)"
-      echo ""AUTH STRING: $AUTH_STRING" > /mnt/jenkins/jenkins/auth_string"
+      "AUTHSTRING = -auth admin:$(cat /mnt/jenkins/jenkins/secrets/initialAdminPassword)",
+      "echo AUTH STRING: $AUTH_STRING > /mnt/jenkins/jenkins/auth_string",
       
 
       "sudo systemctl start jenkins",
@@ -91,7 +91,7 @@ resource "aws_instance" "jenkins" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("~/Downloads/gocicd.pem")
+    private_key = file("~/Downloads/cicdterraform.pem")
   }
  tags = {
     "Name"      = "Jenkins_Server"
