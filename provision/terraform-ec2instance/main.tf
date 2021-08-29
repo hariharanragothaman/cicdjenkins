@@ -59,7 +59,7 @@ resource "aws_instance" "jenkins" {
   security_groups = [aws_security_group.web_traffic.name]
   # Create a key-pair ni the Amazon EC2 Console: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair
   key_name        = "cicdterraform"
-  
+
   # Execute Remote commands inside the grabbed instance using "remote-exec" provisioner
   provisioner "remote-exec" {
     inline = [
@@ -69,15 +69,23 @@ resource "aws_instance" "jenkins" {
       "sudo add-apt-repository universe",
       "sudo apt-get update",
       "sudo apt install --assume-yes openjdk-11-jdk",
+
+      /*  Setup Docker */
+      "sudo apt-get update",
+      "sudo apt-get install curl",
+      "sudo curl -fsSL https://get.docker.com -o get-docker.sh",
+      "sudo DRY_RUN=1 sh ./get-docker.sh",
+
+      /* Build Docker Image and run container in port 8080*/
+      "sudo docker build -t jenkins:jcasc jenkinsDockerSetup",
+      "sudo docker run --name jenkins --rm -p 8080:8080 --env JENKINS_ADMIN_ID=admin --env JENKINS_ADMIN_PASSWORD=password jenkins:jcasc",
+
+      # install remaining dependencies
+      "sudo apt -y install nginx",
+      "sudo apt -y install ufw",
+
+      /*
       "sudo apt-get --assume-yes install jenkins",
-
-      # Add Logic here to configure jenkins with LDAP, webhooks etc
-      # "sudo java -Djenkins.install.runSetupWizard=false -jar -Dhudson.Main.development=true ./usr/share/jenkins/jenkins.war",
-      "ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false",
-      "sudo systemctl start jenkins",
-
-      # Add LOGIC to configure plugins - using jenkins plugin manager
-
       # Add LOGIC for IPTABLES
       "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
       "sudo sh -c \"iptables-save > /etc/iptables.rules\"",
@@ -85,9 +93,25 @@ resource "aws_instance" "jenkins" {
       "echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections",
       "sudo apt-get -y install iptables-persistent",
       "sudo ufw allow 8080",
+      */
+      # setup debian firewall
+      "sudo ufw status verbose",
+      "sudo ufw default deny incoming",
+      "sudo ufw default allow outgoing",
+      "sudo ufw allow ssh",
+      "sudo ufw allow 22",
+      "sudo ufw allow 80",
+      "sudo yes | ufw enable",
+
+      # update nginx configuration
+      "sudo rm -f /etc/nginx/sites-enabled/default",
+      "sudo cp -f /tmp/jenkins-proxy /etc/nginx/sites-enabled",
+      "sudo service nginx restart"
+
     ]
   } 
 
+  # Allowing Connection through SSH
  connection {
     type        = "ssh"
     host        = self.public_ip
