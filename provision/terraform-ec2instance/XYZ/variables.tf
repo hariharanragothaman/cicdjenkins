@@ -1,8 +1,3 @@
-variable "ingressrules" {
-  type    = list(number)
-  default = [80, 443, 22]
-}
-
 variable "ec2_instance_type" {
   description = "AWS Instance Size"
   default = "t2.micro"

@@ -5,8 +5,14 @@ provider "aws" {
 
 # Configuring security groups
 
+variable "ingressrules" {
+  type    = list(number)
+  default = [80, 443, 22]
+}
+
+# Security Group has to be independently configured for each Master?
 resource "aws_security_group" "web_traffic" {
-  name        = "Allow web traffic"
+  name        = "Allow web traffic XYZ"
   description = "Allow ssh and standard http/https ports inbound and everything outbound"
 
   dynamic "ingress" {
@@ -69,7 +75,7 @@ resource "aws_instance" "jenkins" {
     private_key = file("~/Downloads/cicdterraform.pem")
   }
  tags = {
-    "Name"      = "Jenkins_Server"
+    "Name"      = "Jenkins_Server2"
     "Terraform" = "true"
   }
 }
