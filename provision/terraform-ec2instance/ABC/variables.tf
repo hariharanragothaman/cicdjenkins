@@ -14,7 +14,7 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "aws_security_group" {
+variable "aws_security_group_name" {
   description = "AWS Security Group Name"
   default = "Allow web traffic"
 }

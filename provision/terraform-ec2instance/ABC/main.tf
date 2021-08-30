@@ -6,7 +6,7 @@ provider "aws" {
 # Configuring security groups
 
 resource "aws_security_group" "web_traffic" {
-  name        = "Allow web traffic"
+  name        = var.aws_security_group_name
   description = "Allow ssh and standard http/https ports inbound and everything outbound"
 
   dynamic "ingress" {
