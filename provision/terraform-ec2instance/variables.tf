@@ -15,3 +15,7 @@ variable "aws_region" {
 variable "aws_security_group_name" {
   description = "AWS Security Group Name"
 }
+
+variable "aws_key_pair_name" {
+  description = "AWS Key Pair"
+}

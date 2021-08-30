@@ -15,3 +15,8 @@ Possible Steps involved:
 a. Typically involves in rebuilding the docker image
 b. Rolling out the docker image to the all EC2 containers running jenkins using 'terraform'
 """
+
+
+
+if __name__ == '__main__':
+    pass

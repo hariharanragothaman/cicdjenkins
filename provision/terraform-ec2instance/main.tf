@@ -53,7 +53,8 @@ resource "aws_instance" "jenkins" {
   instance_type = "t2.micro"
   security_groups = [aws_security_group.web_traffic.name]
   # Create a key-pair ni the Amazon EC2 Console: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair
-  key_name        = "cicdterraform"
+  # Ensure key-pairs are in the same-region otherwise a 400 will be generated
+  key_name        = var.aws_key_pair_name
   # Execute Remote commands inside the grabbed instance using "remote-exec" provisioner
   provisioner "remote-exec" {
     inline = [
@@ -66,7 +67,7 @@ resource "aws_instance" "jenkins" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("~/Downloads/cicdterraform.pem")
+    private_key = file("~/Downloads/${var.aws_key_pair_name}.pem")
   }
  tags = {
     "Name"      = "Jenkins_Server"
