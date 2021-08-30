@@ -70,7 +70,7 @@ resource "aws_instance" "jenkins" {
     private_key = file("~/Downloads/${var.aws_key_pair_name}.pem")
   }
  tags = {
-    "Name"      = "Jenkins_Server"
+    "Name"      = var.project_name
     "Terraform" = "true"
   }
 }

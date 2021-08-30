@@ -19,3 +19,7 @@ variable "aws_security_group_name" {
 variable "aws_key_pair_name" {
   description = "AWS Key Pair"
 }
+
+variable "project_name" {
+  description = "Project Name"
+}
